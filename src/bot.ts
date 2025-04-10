@@ -89,16 +89,19 @@ export const bot = new Bot(config.BOT_TOKEN)
 				return context.send("⚠️ Failed to generate invite link");
 			}
 
-			context.editText(
-				`🎯 *Link ready for ${group.name}:*\n\n ${result.link}\n\n`,
-				{
-					parse_mode: "Markdown",
-					link_preview_options: {
-						is_disabled: true,
-					},
-					reply_markup: backMenu,
-				},
+			const safeGroupName = group.name.replace(
+				/([_*[\]()~`>#+-=|{}.!])/g,
+				"\\$1",
 			);
+			const message = `🎯 *Link ready for ${safeGroupName}:*\n\n ${result.link}\n\n`;
+
+			context.editText(message, {
+				parse_mode: "Markdown",
+				link_preview_options: {
+					is_disabled: true,
+				},
+				reply_markup: backMenu,
+			});
 		} catch (error) {
 			console.error("Error generating invite link:", error);
 		}
