@@ -1,0 +1,24 @@
+services:
+    bot:
+    			container_name: market-bot
+    			restart: unless-stopped
+    			build:
+    				context: .
+    				dockerfile: Dockerfile
+    			environment:
+    			- NODE_ENV=production
+        postgres:
+    			container_name: market-postgres
+    			image: postgres:latest
+    			restart: unless-stopped
+    			environment:
+    				- POSTGRES_USER=market
+    				- POSTGRES_PASSWORD=1effc98654b895c2cadcc927
+    				- POSTGRES_DB=market
+    			volumes:
+    				- postgres_data:/var/lib/postgresql/data
+volumes:
+    postgres_data:
+    
+networks:
+    default: {}
