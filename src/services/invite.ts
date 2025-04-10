@@ -1,6 +1,4 @@
 import type { Bot } from "gramio";
-import { bot } from "bot";
-import { findGroupById } from "db/groups";
 
 export async function generateInviteLink(
 	bot: Bot,
@@ -22,38 +20,3 @@ export async function generateInviteLink(
 		return { id: groupId, name, link: null, error };
 	}
 }
-
-bot.callbackQuery(/join_group_(-\d+)/, async (context) => {
-	const callbackData = context.queryPayload;
-	const groupId = Number.parseInt(
-		typeof callbackData === "string"
-			? callbackData.split("_").pop() || "0"
-			: "0",
-	);
-
-	try {
-		const group = await findGroupById(groupId);
-		if (!group) return;
-
-		const result = await generateInviteLink(
-			bot,
-			Number(group.groupId),
-			group.name,
-		);
-
-		if (result.error || !result.link) {
-			return context.send(
-				"⚠️ Failed to generate invite link. Please try again later.",
-			);
-		}
-
-		context.send(`🎯 *Link ready for ${group.name}:*\n\n ${result.link}\n\n`, {
-			parse_mode: "Markdown",
-			link_preview_options: {
-				is_disabled: true,
-			},
-		});
-	} catch (error) {
-		console.error("Error generating invite link:", error);
-	}
-});
